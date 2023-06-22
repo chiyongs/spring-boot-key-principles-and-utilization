@@ -4,6 +4,7 @@ import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 public class MyContainerInitV1 implements ServletContainerInitializer {
@@ -12,5 +13,16 @@ public class MyContainerInitV1 implements ServletContainerInitializer {
         System.out.println("MyContainerInitV1.onStartup");
         System.out.println("MyContainerInitV1 c = " + c);
         System.out.println("MyContainerInitV1 ctx = " + ctx);
+
+        // class hello.container.AppInitV1Servlet
+        for (Class<?> appInitClass : c) {
+            try {
+                // new AppInitV1Servlet()과 같은 코드
+                AppInit appInit = (AppInit) appInitClass.getDeclaredConstructor().newInstance();
+                appInit.onStartup(ctx);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
